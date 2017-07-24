@@ -5,17 +5,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.dsl.Channels;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.dsl.channel.MessageChannels;
+import org.springframework.integration.dsl.channel.QueueChannelSpec;
 import org.springframework.integration.dsl.core.Pollers;
 import org.springframework.integration.ip.tcp.TcpReceivingChannelAdapter;
 import org.springframework.integration.ip.tcp.connection.TcpNioClientConnectionFactory;
-import org.springframework.integration.ip.tcp.serializer.ByteArrayLfSerializer;
+import org.springframework.messaging.MessageChannel;
 
-import java.util.concurrent.Executors;
-
+import static org.springframework.integration.dsl.channel.MessageChannels.queue;
+import static org.springframework.integration.dsl.core.Pollers.fixedDelay;
 import static org.springframework.integration.dsl.support.Transformers.objectToString;
 
 @Configuration
@@ -30,9 +33,10 @@ public class ClientConfig {
 
         return IntegrationFlows
             .from(tcpReceivingChannelAdapter)
-//            .channel(Channels::queue)
+            .channel(channels -> queue(1000))
+            .bridge(bridge -> bridge.poller(fixedDelay(500)))
             .transform(source -> {
-                log.info("Transforming: {}", source);
+                log.info("Transforming: {}", new String((byte[])source));
                 return source;
             }) // converts message's payload from byte[] to String
             .transform(objectToString()) // converts message's payload from byte[] to String

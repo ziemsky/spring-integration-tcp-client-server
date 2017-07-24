@@ -23,7 +23,7 @@ public class ServerConfig {
                                            final TcpConnectionsTracker tcpConnectionsTracker) {
 
         return IntegrationFlows
-            .from(messageSource, endpointSpec -> endpointSpec.poller(fixedDelay(2, SECONDS)))
+            .from(messageSource, endpointSpec -> endpointSpec.poller(fixedDelay(3000)))
             .filter(message -> tcpConnectionsTracker.clientConnected())
             .transform(messageConnectionIdHeaderPopulator)
             .transform(message -> {System.out.println("SENDING: " + message); return message;})

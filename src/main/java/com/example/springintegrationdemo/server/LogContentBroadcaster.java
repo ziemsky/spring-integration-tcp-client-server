@@ -12,7 +12,8 @@ import static java.text.MessageFormat.format;
 
 public class LogContentBroadcaster implements MessageSource<String> {
 
-    char delim = 0x0a;
+//    char delim = 0x0a;
+    char delim = '|';
 
     private int count = 0;
 
@@ -23,7 +24,7 @@ public class LogContentBroadcaster implements MessageSource<String> {
     }
 
     private String newLogEntry() {
-        return format("time: {0}; payload: {1}{2}{3}{4}", LocalTime.now(), count++, delim, randomString(), delim);
+        return format("time: {0}; payload: {1}{2}{3}{4}{5}{6}", LocalTime.now(), count++, delim, count++, delim, count++, delim);
     }
 
     private String randomString() {
